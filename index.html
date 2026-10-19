@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Chúc mừng 20/10</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&family=Quicksand:wght@500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:radial-gradient(ellipse at 50% 45%,#220a16 0%,#060206 55%,#000 100%);
+  font-family:'Quicksand',system-ui,sans-serif;color:#f7c6d0;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+#bg{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+.stage{position:fixed;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);transition:opacity 1.2s ease,transform 1.2s ease}
+.stage.off{opacity:0;pointer-events:none}
+#s1.off{transform:scale(1.04)}
+#bouquet{position:relative;width:min(86vw,54vh);aspect-ratio:4/5;cursor:pointer;
+  animation:float 5s ease-in-out infinite;transition:transform .5s;filter:drop-shadow(0 0 40px rgba(255,120,160,.18))}
+#bouquet svg{width:100%;height:100%;overflow:visible}
+#roses{transform-origin:50% 35%;transition:transform 1s cubic-bezier(.5,0,.2,1),opacity .9s}
+#bouquet.open #roses{transform:scale(1.5);opacity:0}
+#bouquet.holding{animation:none;transform:scale(1.05)}
+.slot{position:absolute;width:27%;aspect-ratio:1/1.12;transform:translate(-50%,-50%) scale(0);opacity:0;
+  border-radius:48% 48% 44% 44%;overflow:hidden;background:linear-gradient(145deg,#ffd0dc,#d86a8c);
+  -webkit-mask-image:radial-gradient(ellipse at center,#000 62%,transparent 98%);mask-image:radial-gradient(ellipse at center,#000 62%,transparent 98%);
+  transition:transform .9s cubic-bezier(.3,1.5,.5,1),opacity .6s;display:flex;align-items:center;justify-content:center;
+  font-size:min(9vw,40px);color:#fff}
+.slot img{width:100%;height:100%;object-fit:cover}
+#bouquet.open .slot{transform:translate(-50%,-50%) scale(1);opacity:1}
+.hint{margin-top:3.2vh;font-size:clamp(15px,4vw,19px);letter-spacing:.04em;animation:pulse 2.4s ease-in-out infinite;text-align:center}
+.bar{width:120px;height:3px;border-radius:3px;background:rgba(255,255,255,.12);margin-top:12px;overflow:hidden;opacity:0;transition:opacity .3s}
+.bar i{display:block;height:100%;width:calc(var(--p,0)*100%);background:linear-gradient(90deg,#ff9ac0,#fff);box-shadow:0 0 10px #ff6fa5}
+#s2.hold .bar{opacity:1}
+@keyframes float{50%{transform:translateY(-10px)}}
+@keyframes pulse{50%{opacity:.45}}
+#space{position:fixed;inset:0;z-index:1;perspective:620px;overflow:hidden;opacity:0;transition:opacity 2s ease 0.4s}
+#space.on{opacity:1}
+#world{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d}
+.it{position:absolute;left:0;top:0;will-change:transform,opacity;white-space:nowrap;backface-visibility:hidden}
+.tx{font-family:'Dancing Script','Pacifico',cursive;font-weight:700;color:#ffa3cc;
+  text-shadow:0 0 5px #ff5aa5,0 0 16px #ff2d85,0 0 34px rgba(255,45,133,.6)}
+.ph{border-radius:12px;overflow:hidden;border:2px solid rgba(255,214,230,.9);box-shadow:0 0 22px rgba(255,90,150,.7),0 0 60px rgba(255,90,150,.25);
+  background:linear-gradient(150deg,#ff9ac0,#b2336a);display:flex;align-items:center;justify-content:center;color:#fff;font-size:44px}
+.ph img{width:100%;height:100%;object-fit:cover;display:block}
+.ht{color:#ff3d6e;text-shadow:0 0 10px #ff2d6a,0 0 26px #ff2d6a;line-height:1}
+#snd{position:fixed;z-index:5;top:max(16px,env(safe-area-inset-top));right:16px;width:44px;height:44px;border-radius:50%;border:0;
+  background:rgba(255,255,255,.08);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);color:#ffd6e6;display:none;align-items:center;justify-content:center;cursor:pointer}
+#snd.on{display:flex}
+#snd svg{width:24px;height:24px}
+#snd .x{display:none}#snd.mute .w{display:none}#snd.mute .x{display:block}
+#flash{position:fixed;inset:0;z-index:4;background:#fff;opacity:0;pointer-events:none;transition:opacity 1s}
+@media (prefers-reduced-motion:reduce){#bouquet{animation:none}.hint{animation:none}}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<div id="space"><div id="world"></div></div>
+
+<div id="s1" class="stage">
+  <div id="bouquet"></div>
+  <p class="hint" id="hint">Chạm vào bó hoa</p>
+  <div class="bar"></div>
+</div>
+<div id="flash"></div>
+<button id="snd" aria-label="Bật/tắt nhạc">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M11 5 6 9H2v6h4l5 4z" fill="currentColor"/><g class="w"><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></g><g class="x"><path d="m16 9 6 6M22 9l-6 6"/></g>
+  </svg>
+</button>
+
+<script>
+/* ============ CẤU HÌNH — CHỈNH Ở ĐÂY ============ */
+const CONFIG = {
+  // Ảnh: bỏ ảnh vào thư mục "images" cạnh file này rồi liệt kê tên (nên 6 ảnh trở lên, tỉ lệ dọc, < 300KB/ảnh)
+  photos: [
+    // "images/1.jpg", "images/2.jpg", "images/3.jpg", "images/4.jpg", "images/5.jpg", "images/6.jpg"
+  ],
+  // Nhạc: đường dẫn file mp3 (vd "music.mp3"). Để trống = dùng nhạc hộp nhạc tự tạo sẵn
+  music: "",
+  messages: [
+    "Chúc mừng ngày Phụ nữ Việt Nam", "Chúc em luôn xinh đẹp", "Chúc em luôn vui vẻ và hạnh phúc",
+    "Chúc em luôn yêu đời", "Mong mọi điều dịu dàng sẽ đến với em", "Mãi yêu em", "Yêu em",
+    "Chúc em thật nhiều may mắn", "20/10"
+  ],
+  holdMs: 1400 // thời gian ấn giữ để vào cảnh cuối
+};
+/* ================================================= */
+
+const $ = s => document.querySelector(s);
+const rnd = (a, b) => a + Math.random() * (b - a);
+const reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+/* ---------- Bó hoa (SVG vẽ bằng code) ---------- */
+const SLOTS = [[30,22],[52,14],[74,21],[27,43],[50,45],[73,42]]; // % trong khung bó hoa
+function rose(x, y, r, fill) {
+  let s = `<g transform="translate(${x} ${y})"><circle r="${r}" fill="url(#${fill})" stroke="rgba(150,30,70,.35)" stroke-width="1.2"/>`;
+  for (let i = 0; i < 6; i++) {
+    const rr = r * (.9 - i * .14);
+    s += `<path transform="rotate(${i * 57})" d="M${-rr} 0 A${rr} ${rr} 0 1 1 ${rr * .25} ${-rr * .95}" fill="rgba(255,255,255,${.05 + i * .02})" stroke="rgba(150,30,70,.38)" stroke-width="1.1"/>`;
+  }
+  return s + `<circle r="${r * .12}" fill="rgba(150,30,70,.35)"/></g>`;
+}
+function leaf(x, y, rot, sc = 1) {
+  return `<path transform="translate(${x} ${y}) rotate(${rot}) scale(${sc})" d="M0 0Q16 -26 0 -54Q-16 -26 0 0Z" fill="#6e9163" stroke="#4d6f46" stroke-width="1"/>`;
+}
+function gyp(x, y, n = 14) {
+  let s = '';
+  for (let i = 0; i < n; i++) s += `<circle cx="${x + rnd(-26, 26)}" cy="${y + rnd(-26, 26)}" r="${rnd(2, 4.4)}" fill="#fffaf5" opacity=".95"/>`;
+  return s;
+}
+function buildBouquet() {
+  const b = $('#bouquet');
+  let g = `<svg viewBox="0 0 400 500"><defs>
+    <radialGradient id="gp" cx="40%" cy="35%"><stop offset="0" stop-color="#ffc3cf"/><stop offset="1" stop-color="#ea7893"/></radialGradient>
+    <radialGradient id="gc" cx="40%" cy="35%"><stop offset="0" stop-color="#fffaf0"/><stop offset="1" stop-color="#f5cfa6"/></radialGradient>
+    <linearGradient id="rb" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f2b3bd"/><stop offset=".5" stop-color="#d98893"/><stop offset="1" stop-color="#f6c1c8"/></linearGradient>
+  </defs>
+  <path d="M90 70Q200 15 310 70L338 205Q306 300 252 410L148 410Q94 300 62 205Z" fill="#fbede6"/>
+  <path d="M36 232Q110 150 196 300L186 408L148 430Q76 350 36 232Z" fill="#f4c3c9"/>
+  <path d="M364 232Q290 150 204 300L214 408L252 430Q324 350 364 232Z" fill="#f9ddd9"/>`;
+  [[60,170,-60],[48,235,-80],[350,170,60],[352,235,80],[92,108,-30],[308,108,30],[70,300,-100],[330,300,100]].forEach(l => g += leaf(...l, 1.2));
+  [[78,150],[322,150],[200,95],[110,320],[290,320],[200,235]].forEach(p => g += gyp(...p, 16));
+  g += '<g id="roses">';
+  SLOTS.forEach((p, i) => g += rose(p[0] * 4, p[1] * 5, 54, (i === 3 || i === 2) ? 'gc' : 'gp'));
+  g += '</g>';
+  g += `<path d="M120 330Q200 290 280 330L330 470Q200 505 70 470Z" fill="#fbede6"/>
+  <path d="M120 330Q170 400 150 480L70 470Z" fill="#f4c3c9" opacity=".9"/>
+  <path d="M280 330Q230 400 250 480L330 470Z" fill="#f6d2d2" opacity=".9"/>
+  <path d="M200 395Q130 340 118 392Q122 430 200 402Z M200 395Q270 340 282 392Q278 430 200 402Z" fill="url(#rb)" stroke="#c9707f" stroke-width="1.2"/>
+  <path d="M196 402Q160 450 128 478L152 482Q186 450 204 410Z M204 402Q240 450 272 478L248 482Q214 450 196 410Z" fill="url(#rb)" stroke="#c9707f" stroke-width="1"/>
+  <ellipse cx="200" cy="398" rx="19" ry="16" fill="url(#rb)" stroke="#c9707f" stroke-width="1.2"/></svg>`;
+  b.innerHTML = g + SLOTS.map((p, i) => {
+    const u = CONFIG.photos.length ? CONFIG.photos[i % CONFIG.photos.length] : '';
+    return `<div class="slot" style="left:${p[0]}%;top:${p[1]}%;transition-delay:${.15 * i + .35}s">${u ? `<img src="${u}" alt="" draggable="false">` : '♥'}</div>`;
+  }).join('');
+}
+buildBouquet();
+
+/* ---------- Nền sao + đom đóm + cánh hoa ---------- */
+const cv = $('#bg'), cx = cv.getContext('2d');
+let W, H, DPR;
+function resize() { DPR = Math.min(devicePixelRatio || 1, 2); W = innerWidth; H = innerHeight; cv.width = W * DPR; cv.height = H * DPR; cx.setTransform(DPR, 0, 0, DPR, 0, 0); }
+addEventListener('resize', resize); resize();
+const spr = document.createElement('canvas'); spr.width = spr.height = 64;
+{ const c = spr.getContext('2d'), g = c.createRadialGradient(32, 32, 0, 32, 32, 32);
+  g.addColorStop(0, 'rgba(255,250,225,1)'); g.addColorStop(.18, 'rgba(255,230,160,.85)'); g.addColorStop(.45, 'rgba(255,200,110,.22)'); g.addColorStop(1, 'rgba(255,200,110,0)');
+  c.fillStyle = g; c.fillRect(0, 0, 64, 64); }
+const stars = Array.from({ length: 110 }, () => ({ x: Math.random(), y: Math.random(), r: rnd(.4, 1.3), p: rnd(0, 6.28), s: rnd(.5, 2) }));
+const flies = Array.from({ length: 34 }, () => ({ x: Math.random() * W, y: Math.random() * H, vx: rnd(-.12, .12), vy: rnd(-.2, -.03), s: rnd(8, 30), p: rnd(0, 6.28), sp: rnd(.6, 1.8) }));
+let petals = [];
+function burst(x, y) {
+  for (let i = 0; i < 46; i++) {
+    const a = rnd(0, 6.28), v = rnd(1.5, 6);
+    petals.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 2, r: rnd(4, 9), rot: rnd(0, 6.28), vr: rnd(-.1, .1), life: 1, c: Math.random() < .3 ? '#fff0e0' : '#ff9db8' });
+  }
+}
+let last = performance.now();
+(function loop(t) {
+  const dt = Math.min((t - last) / 16.7, 3); last = t;
+  cx.clearRect(0, 0, W, H);
+  for (const s of stars) { cx.globalAlpha = .35 + .65 * Math.abs(Math.sin(t / 1000 * s.s + s.p)); cx.fillStyle = '#fff'; cx.fillRect(s.x * W, s.y * H, s.r, s.r); }
+  for (const f of flies) {
+    f.x += f.vx * dt + Math.sin(t / 1500 + f.p) * .15; f.y += f.vy * dt;
+    if (f.y < -30) { f.y = H + 30; f.x = Math.random() * W; }
+    cx.globalAlpha = .25 + .75 * Math.abs(Math.sin(t / 1000 * f.sp + f.p));
+    cx.drawImage(spr, f.x - f.s / 2, f.y - f.s / 2, f.s, f.s);
+  }
+  petals = petals.filter(p => p.life > 0);
+  for (const p of petals) {
+    p.x += p.vx * dt; p.y += p.vy * dt; p.vy += .07 * dt; p.vx *= .985; p.rot += p.vr * dt; p.life -= .006 * dt;
+    cx.globalAlpha = Math.max(p.life, 0); cx.fillStyle = p.c;
+    cx.save(); cx.translate(p.x, p.y); cx.rotate(p.rot); cx.beginPath(); cx.ellipse(0, 0, p.r, p.r * .55, 0, 0, 6.28); cx.fill(); cx.restore();
+  }
+  cx.globalAlpha = 1;
+  requestAnimationFrame(loop);
+})(last);
+
+/* ---------- Nhạc ---------- */
+let actx, master, audioEl, muted = false, musicOn = false, timer;
+function startMusic() {
+  if (musicOn) return; musicOn = true;
+  $('#snd').classList.add('on');
+  if (CONFIG.music) { audioEl = new Audio(CONFIG.music); audioEl.loop = true; audioEl.volume = .8; audioEl.play().catch(() => {}); return; }
+  const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+  actx = new AC(); master = actx.createGain(); master.gain.value = .5;
+  const dl = actx.createDelay(1); dl.delayTime.value = .36;
+  const fb = actx.createGain(); fb.gain.value = .38; const wet = actx.createGain(); wet.gain.value = .45;
+  master.connect(actx.destination); master.connect(dl); dl.connect(fb); fb.connect(dl); dl.connect(wet); wet.connect(actx.destination);
+  const chords = [[261.6,329.6,392,523.3],[220,261.6,329.6,440],[174.6,220,261.6,349.2],[196,246.9,293.7,392]];
+  const pat = [0,1,2,3,2,1,2,3]; let step = 0;
+  const note = (f, when, vol) => {
+    const o = actx.createOscillator(), g = actx.createGain(); o.type = 'triangle'; o.frequency.value = f;
+    g.gain.setValueAtTime(0, when); g.gain.linearRampToValueAtTime(vol, when + .01); g.gain.exponentialRampToValueAtTime(.0008, when + 1.8);
+    o.connect(g); g.connect(master); o.start(when); o.stop(when + 1.9);
+  };
+  const tick = () => {
+    const c = chords[Math.floor(step / 8) % 4], i = step % 8, now = actx.currentTime + .05;
+    note(c[pat[i]] * 2, now, .16);
+    if (i === 0) note(c[0] / 2, now, .2);
+    if (i === 4 && Math.random() < .6) note(c[2] * 4, now + .15, .07);
+    step++;
+  };
+  tick(); timer = setInterval(tick, 380);
+}
+$('#snd').addEventListener('click', e => {
+  e.stopPropagation(); muted = !muted; $('#snd').classList.toggle('mute', muted);
+  if (audioEl) audioEl.muted = muted; if (master) master.gain.value = muted ? 0 : .5;
+});
+document.addEventListener('visibilitychange', () => { if (actx) document.hidden ? actx.suspend() : actx.resume(); if (audioEl) document.hidden ? audioEl.pause() : audioEl.play().catch(() => {}); });
+
+/* ---------- Luồng tương tác ---------- */
+let state = 1;
+const bq = $('#bouquet'), hint = $('#hint'), s1 = $('#s1');
+bq.addEventListener('contextmenu', e => e.preventDefault());
+bq.addEventListener('click', e => {
+  if (state !== 1) return;
+  state = 2; startMusic();
+  const r = bq.getBoundingClientRect(); burst(r.left + r.width * .5, r.top + r.height * .35);
+  bq.classList.add('open');
+  hint.style.opacity = 0;
+  setTimeout(() => { hint.textContent = 'Ấn giữ bó hoa'; hint.style.opacity = 1; state = 2.5; }, 1400);
+});
+let holdT0 = 0, holdRAF = 0;
+function holdStep() {
+  const p = Math.min((performance.now() - holdT0) / CONFIG.holdMs, 1);
+  s1.style.setProperty('--p', p); $('.bar').style.setProperty('--p', p);
+  if (p >= 1) { endHold(); enterSpace(); return; }
+  holdRAF = requestAnimationFrame(holdStep);
+}
+function startHold(e) {
+  if (state !== 2.5) return; e.preventDefault();
+  holdT0 = performance.now(); s1.classList.add('hold'); bq.classList.add('holding'); holdStep();
+}
+function endHold() { cancelAnimationFrame(holdRAF); s1.classList.remove('hold'); bq.classList.remove('holding'); $('.bar').style.setProperty('--p', 0); }
+bq.addEventListener('pointerdown', startHold);
+['pointerup', 'pointercancel', 'pointerleave'].forEach(ev => bq.addEventListener(ev, endHold));
+
+/* ---------- Cảnh 3D: bay xuyên không gian lời chúc ---------- */
+const world = $('#world'), space = $('#space');
+const items = [], FAR = -3000, NEAR = 420;
+function makeItem(i) {
+  const el = document.createElement('div'); el.className = 'it';
+  const k = Math.random(); let kind;
+  if (i === 0) kind = 'big';
+  else kind = k < .52 ? 'tx' : k < .78 ? 'ph' : 'ht';
+  if (kind === 'big') { el.className += ' tx'; el.textContent = 'Chúc mừng 20/10'; el.style.fontSize = '64px'; }
+  else if (kind === 'tx') { el.className += ' tx'; el.textContent = CONFIG.messages[Math.floor(Math.random() * CONFIG.messages.length)]; el.style.fontSize = rnd(20, 44) + 'px'; }
+  else if (kind === 'ph') {
+    el.className += ' ph'; const w = rnd(120, 180); el.style.width = w + 'px'; el.style.height = w * 1.3 + 'px';
+    el.innerHTML = CONFIG.photos.length ? `<img src="${CONFIG.photos[Math.floor(Math.random() * CONFIG.photos.length)]}" alt="" draggable="false">` : '♥';
+  } else { el.className += ' ht'; el.textContent = '♥'; el.style.fontSize = rnd(18, 40) + 'px'; }
+  world.appendChild(el);
+  const it = { el, kind, z: rnd(FAR, NEAR), rz: rnd(-14, 14), ry: rnd(-25, 25), ph: rnd(0, 6.28) };
+  place(it, true); return it;
+}
+function place(it, init) {
+  const narrow = W < 700, sx = narrow ? 420 : 1000, sy = narrow ? 620 : 560;
+  // tránh đúng giữa màn hình để không che chữ khi bay thẳng vào camera
+  let x = rnd(-sx, sx), y = rnd(-sy, sy);
+  if (Math.abs(x) < 120 && Math.abs(y) < 120) x += x < 0 ? -240 : 240;
+  it.x = x; it.y = y; if (!init) it.z = FAR;
+}
+function buildSpace() { const n = W < 700 ? 46 : 64; for (let i = 0; i < n; i++) items.push(makeItem(i)); }
+let ry = 0, rx = 0, tx = 0, ty = 0, speed = 150, running = false, drag = null;
+space.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY }; });
+addEventListener('pointerup', () => { drag = null; });
+addEventListener('pointermove', e => {
+  if (!running) return;
+  if (drag) { tx = Math.max(-35, Math.min(35, tx + (e.clientX - drag.x) * .18)); ty = Math.max(-25, Math.min(25, ty - (e.clientY - drag.y) * .18)); drag = { x: e.clientX, y: e.clientY }; }
+  else if (e.pointerType === 'mouse') { tx = (e.clientX / W - .5) * 24; ty = -(e.clientY / H - .5) * 16; }
+});
+let sl = performance.now();
+function spaceLoop(t) {
+  if (!running) return;
+  const dt = Math.min((t - sl) / 1000, .05); sl = t;
+  ry += (tx - ry) * .06; rx += (ty - rx) * .06;
+  world.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
+  for (const it of items) {
+    it.z += speed * dt;
+    if (it.z > NEAR) { place(it); }
+    const fadeIn = Math.min(Math.max((it.z - FAR) / 700, 0), 1), fadeOut = Math.min(Math.max((NEAR - it.z) / 220, 0), 1);
+    const wob = it.kind === 'ht' ? Math.sin(t / 700 + it.ph) * 6 : 0;
+    it.el.style.opacity = fadeIn * fadeOut;
+    it.el.style.transform = `translate3d(${it.x}px,${it.y + wob}px,${it.z}px) translate(-50%,-50%) rotateZ(${it.rz}deg) rotateY(${it.ry}deg)`;
+  }
+  requestAnimationFrame(spaceLoop);
+}
+function enterSpace() {
+  state = 3; buildSpace();
+  $('#flash').style.opacity = .85;
+  setTimeout(() => {
+    s1.classList.add('off'); space.classList.add('on'); $('#flash').style.opacity = 0;
+    running = true; sl = performance.now(); requestAnimationFrame(spaceLoop);
+  }, 450);
+}
+</script>
+</body>
+</html>
