@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Chúc mừng 20/10</title>
+<title>Chúc mừng 20/10 LH</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&family=Quicksand:wght@500;600&display=swap" rel="stylesheet">
 <style>
@@ -27,6 +27,10 @@ html,body{height:100%;overflow:hidden;background:radial-gradient(ellipse at 50% 
   transition:transform .9s cubic-bezier(.3,1.5,.5,1),opacity .6s;display:flex;align-items:center;justify-content:center;
   font-size:min(9vw,40px);color:#fff}
 .slot img{width:100%;height:100%;object-fit:cover}
+.slot.cut{background:none;-webkit-mask-image:none;mask-image:none;border-radius:0;overflow:visible;width:30%;
+  filter:drop-shadow(0 3px 8px rgba(120,20,60,.4))}
+.slot.cut img{object-fit:contain}
+.slot.blend{mix-blend-mode:screen;filter:none}
 #bouquet.open .slot{transform:translate(-50%,-50%) scale(1);opacity:1}
 .hint{margin-top:3.2vh;font-size:clamp(15px,4vw,19px);letter-spacing:.04em;animation:pulse 2.4s ease-in-out infinite;text-align:center}
 .bar{width:120px;height:3px;border-radius:3px;background:rgba(255,255,255,.12);margin-top:12px;overflow:hidden;opacity:0;transition:opacity .3s}
@@ -43,6 +47,10 @@ html,body{height:100%;overflow:hidden;background:radial-gradient(ellipse at 50% 
 .ph{border-radius:12px;overflow:hidden;border:2px solid rgba(255,214,230,.9);box-shadow:0 0 22px rgba(255,90,150,.7),0 0 60px rgba(255,90,150,.25);
   background:linear-gradient(150deg,#ff9ac0,#b2336a);display:flex;align-items:center;justify-content:center;color:#fff;font-size:44px}
 .ph img{width:100%;height:100%;object-fit:cover;display:block}
+.ph.cut{background:none;border:0;box-shadow:none;border-radius:0;overflow:visible;
+  filter:drop-shadow(0 0 8px rgba(255,130,175,.85)) drop-shadow(0 0 22px rgba(255,90,150,.45))}
+.ph.cut img{object-fit:contain}
+.ph.blend{mix-blend-mode:screen;filter:none}
 .ht{color:#ff3d6e;text-shadow:0 0 10px #ff2d6a,0 0 26px #ff2d6a;line-height:1}
 #snd{position:fixed;z-index:5;top:max(16px,env(safe-area-inset-top));right:16px;width:44px;height:44px;border-radius:50%;border:0;
   background:rgba(255,255,255,.08);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);color:#ffd6e6;display:none;align-items:center;justify-content:center;cursor:pointer}
@@ -74,15 +82,17 @@ html,body{height:100%;overflow:hidden;background:radial-gradient(ellipse at 50% 
 const CONFIG = {
   // Ảnh: bỏ ảnh vào thư mục "images" cạnh file này rồi liệt kê tên (nên 6 ảnh trở lên, tỉ lệ dọc, < 300KB/ảnh)
   photos: [
-    "images/1.jpg", "images/2.jpg", "images/3.jpg", "images/4.jpg", "images/5.jpg", "images/6.jpg"
+    "images/1.png", "images/2.png", "images/3.png", "images/4.png", "images/5.png", "images/6.png"
   ],
   // Nhạc: đường dẫn file mp3 (vd "music.mp3"). Để trống = dùng nhạc hộp nhạc tự tạo sẵn
   music: "",
   messages: [
-    "Chúc mừng ngày Phụ nữ Việt Nam", "Chúc em luôn xinh đẹp", "Chúc em luôn vui vẻ và hạnh phúc",
-    "Chúc em luôn yêu đời", "Mong mọi điều dịu dàng sẽ đến với em", "Mãi yêu em", "Yêu em",
-    "Chúc em thật nhiều may mắn", "20/10"
+    "Chúc mừng ngày Phụ nữ Việt Nam", "Chúc Linh iuuuuuu luôn xinh đẹp", "Chúc Linh iu luôn vui vẻ và hạnh phúc",
+    "Chúc em iu luôn yêu đời", "Mong mọi điều dịu dàng sẽ đến với em", "Mãi yêu em", "Yêu Linh húiiiiiiiii",
+    "Anh yêu emmmmmmm", "20/10"
   ],
+  cutout: true,   // true = ảnh đã xóa phông (PNG trong suốt): bỏ khung/nền, chỉ giữ hình người
+  blackBg: false, // chỉ bật true nếu ảnh vẫn còn nền đen thật trong file (vd file .jpg): biến màu đen thành trong suốt
   holdMs: 1400 // thời gian ấn giữ để vào cảnh cuối
 };
 /* ================================================= */
@@ -132,7 +142,8 @@ function buildBouquet() {
   <ellipse cx="200" cy="398" rx="19" ry="16" fill="url(#rb)" stroke="#c9707f" stroke-width="1.2"/></svg>`;
   b.innerHTML = g + SLOTS.map((p, i) => {
     const u = CONFIG.photos.length ? CONFIG.photos[i % CONFIG.photos.length] : '';
-    return `<div class="slot" style="left:${p[0]}%;top:${p[1]}%;transition-delay:${.15 * i + .35}s">${u ? `<img src="${u}" alt="" draggable="false">` : '♥'}</div>`;
+    const cls = u ? (CONFIG.blackBg ? ' cut blend' : CONFIG.cutout ? ' cut' : '') : '';
+    return `<div class="slot${cls}" style="left:${p[0]}%;top:${p[1]}%;transition-delay:${.15 * i + .35}s">${u ? `<img src="${u}" alt="" draggable="false">` : '♥'}</div>`;
   }).join('');
 }
 buildBouquet();
@@ -247,7 +258,7 @@ function makeItem(i) {
   if (kind === 'big') { el.className += ' tx'; el.textContent = 'Chúc mừng 20/10'; el.style.fontSize = '64px'; }
   else if (kind === 'tx') { el.className += ' tx'; el.textContent = CONFIG.messages[Math.floor(Math.random() * CONFIG.messages.length)]; el.style.fontSize = rnd(20, 44) + 'px'; }
   else if (kind === 'ph') {
-    el.className += ' ph'; const w = rnd(120, 180); el.style.width = w + 'px'; el.style.height = w * 1.3 + 'px';
+    el.className += ' ph' + (CONFIG.photos.length ? (CONFIG.blackBg ? ' cut blend' : CONFIG.cutout ? ' cut' : '') : ''); const w = rnd(120, 180); el.style.width = w + 'px'; el.style.height = w * 1.3 + 'px';
     el.innerHTML = CONFIG.photos.length ? `<img src="${CONFIG.photos[Math.floor(Math.random() * CONFIG.photos.length)]}" alt="" draggable="false">` : '♥';
   } else { el.className += ' ht'; el.textContent = '♥'; el.style.fontSize = rnd(18, 40) + 'px'; }
   world.appendChild(el);
